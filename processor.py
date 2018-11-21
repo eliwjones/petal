@@ -1,3 +1,7 @@
+"""
+  See: https://github.com/eliwjones/petal/blob/master/processor.py
+"""
+
 from decimal import Decimal
 
 import csv
