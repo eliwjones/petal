@@ -126,4 +126,10 @@ def output_filepath(filepath):
 
 
 if __name__ == '__main__':
+    """
+      Ungzip all the csvs, overwrite always.  What could go wrong?
+    """
+    from subprocess import Popen
+    Popen('gzip -fkd transactions*csv.gz', shell=True).wait() # Sorta funky, but works for me.
+
     process('transactions*.csv')
