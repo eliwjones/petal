@@ -71,7 +71,7 @@ def dump_aggregated_data(aggregated_data, output_filepath):
         write_header = True  # Feels dumb.
 
     with open(output_filepath, 'a+') as f:
-        csv_writer = csv.DictWriter(f, delimiter='|', fieldnames=header)
+        csv_writer = csv.DictWriter(f, delimiter='|', fieldnames=header, extrasaction='ignore')
 
         if write_header:
             csv_writer.writeheader()
@@ -91,6 +91,24 @@ def update_aggregated_data(aggregated_data, datum):
         date = 'YYYY-MM-DD'
 
     """
+    if 'last_date' not in aggregated_data:
+        aggregated_data['last_date'] = datum['date']
+
+    if aggregated_data['last_date'] != datum['date']:
+        """
+          We are calculating daily min, max values so only update when hit new date.
+        """
+
+        if aggregated_data['sum'] < aggregated_data['min']:
+            aggregated_data['min'] = aggregated_data['sum']
+
+        if aggregated_data['sum'] > aggregated_data['max']:
+            aggregated_data['max'] = aggregated_data['sum']
+
+        aggregated_data['last_date'] = datum['date']
+    
+
+
     sign = 1
     if datum['type'] == 'debit':
         sign = -1
@@ -98,12 +116,6 @@ def update_aggregated_data(aggregated_data, datum):
     aggregated_data['n'] += 1
     aggregated_data['sum'] += sign * Decimal(datum['amount'])
 
-    if aggregated_data['sum'] < aggregated_data['min']:
-        aggregated_data['min'] = aggregated_data['sum']
-
-    if aggregated_data['sum'] > aggregated_data['max']:
-        aggregated_data['max'] = aggregated_data['sum']
-    
     return aggregated_data
 
 
