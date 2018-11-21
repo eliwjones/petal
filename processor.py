@@ -125,7 +125,7 @@ def extract_csv_data(filepath):
     """
 
     with open(filepath, 'r') as f:
-        reader = csv.DictReader(f, delimiter='|')
+        reader = csv.DictReader(f, delimiter='|', escapechar='\\')
         for row in reader:
             yield row
 
