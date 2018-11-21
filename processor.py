@@ -119,20 +119,20 @@ def update_aggregated_data(aggregated_data, datum):
     return aggregated_data
 
 
-def extract_csv_data(filepath):
+def extract_csv_data(filepath, delimiter='|'):
     """
       Use generators to save memory.
     """
 
     with open(filepath, 'r') as f:
-        reader = csv.DictReader(f, delimiter='|', escapechar='\\')
+        reader = csv.DictReader(f, delimiter=delimiter, escapechar='\\')
         for row in reader:
             yield row
 
 
 def output_filepath(filepath):
     nums = re.findall('\d+', filepath)
-    num = '0'
+    num = ''
     if nums:
         num = nums[0]
 
