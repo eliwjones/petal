@@ -20,9 +20,6 @@ def process(fileglob):
         aggregated_data = {'user_id': None, 'n': 0, 'sum': 0, 'min': 0, 'max': 0}
 
         for parsed_row in extract_csv_data(filepath):
-            """
-              TODO: What about dangling user_id info at end of csv?  Possibly, "common pitfalls" confused me and this is a non-issue.
-            """
 
             if aggregated_data['user_id'] is None:
                 aggregated_data['user_id'] = parsed_row['user_id']
@@ -43,6 +40,21 @@ def process(fileglob):
                 # Re-initialize
                 datum_list = []
                 aggregated_data = {'user_id': parsed_row['user_id'], 'n': 0, 'sum': 0, 'min': 0, 'max': 0}
+
+
+        """
+          At end of csv file, roll-up and dump last chunk of user_data.
+        """
+
+        sorted_datum = sorted(datum_list, key=lambda k: k['date'])
+
+        for datum in sorted_datum:
+            aggregated_data = update_aggregated_data(aggregated_data, datum)
+
+        dump_aggregated_data(aggregated_data, output_filepath(filepath))
+
+
+
 
 
 def dump_aggregated_data(aggregated_data, output_filepath):
