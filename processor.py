@@ -28,9 +28,6 @@ def process(fileglob):
             if aggregated_data['user_id'] is None:
                 aggregated_data['user_id'] = parsed_row['user_id']
 
-
-            datum_list.append(parsed_row)
-
             if aggregated_data['user_id'] != parsed_row['user_id']:
                 # We want earliest 'date' datum first.
                 sorted_datum = sorted(datum_list, key=lambda k: k['date'])
@@ -44,6 +41,11 @@ def process(fileglob):
                 # Re-initialize
                 datum_list = []
                 aggregated_data = {'user_id': parsed_row['user_id'], 'n': 0, 'sum': 0, 'min': 0, 'max': 0}
+
+            """
+              We are still on same user_id so just append to datum_list.
+            """
+            datum_list.append(parsed_row)
 
 
         """
