@@ -35,6 +35,8 @@ def process(fileglob):
                 for datum in sorted_datum:
                     aggregated_data = update_aggregated_data(aggregated_data, datum)
 
+                aggregated_data = finalize_aggregated_data(aggregated_data)
+
                 # Dump current stack of user info to output file.
                 dump_aggregated_data(aggregated_data, output_filepath(filepath))
 
@@ -57,10 +59,9 @@ def process(fileglob):
         for datum in sorted_datum:
             aggregated_data = update_aggregated_data(aggregated_data, datum)
 
+        aggregated_data = finalize_aggregated_data(aggregated_data)
+
         dump_aggregated_data(aggregated_data, output_filepath(filepath))
-
-
-
 
 
 def dump_aggregated_data(aggregated_data, output_filepath):
@@ -77,6 +78,24 @@ def dump_aggregated_data(aggregated_data, output_filepath):
             csv_writer.writeheader()
 
         csv_writer.writerow(aggregated_data)
+
+
+def finalize_aggregated_data(aggregated_data):
+    """
+      For better or for worse, we are assuming the last bit of transaction
+      data for a user is the final transaction for that day.
+
+      Thus, we update min, max accordingly.
+
+    """
+
+    if aggregated_data['sum'] < aggregated_data['min']:
+        aggregated_data['min'] = aggregated_data['sum']
+
+    if aggregated_data['sum'] > aggregated_data['max']:
+        aggregated_data['max'] = aggregated_data['sum']
+
+    return aggregated_data
 
 
 def update_aggregated_data(aggregated_data, datum):
@@ -107,7 +126,6 @@ def update_aggregated_data(aggregated_data, datum):
 
         aggregated_data['last_date'] = datum['date']
     
-
 
     sign = 1
     if datum['type'] == 'debit':
